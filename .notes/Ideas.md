@@ -45,6 +45,10 @@ ONE FRAMEWORK TO RULE THEM ALL. Is this it?
 https://github.com/jhlywa/chess.js
 https://chessboardjs.com/
 
+This seems to be the primary framework.  chessboardjs only has one CSS file without any variances on screen sizes.  Disappointing.  border: 2px on all screen sizes?
+
+Should I implement jquery-ui THEMES to roll up a nice CSS framework?
+
 justinfagnani has jquery support?  Anyway, this is some of the minutia to build a nice chess-mates platform.
 
 # key point
