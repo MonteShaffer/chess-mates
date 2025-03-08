@@ -65,3 +65,90 @@ checkmate with random position of two kings and two knights for one player, one/
 
 Daily puzzles are a thing, but minigames are very important.  It needs to feel fun.
 
+# From 3/5/2025
+
+computer hints (partial, this peice, full).  Allow levels of hints 1-9,beth of lozza.
+
+decompose elements into fundamental blocks or units.
+
+/php/session.php
+/php/admin/globals.php
+/php/system/nonce.php login.php signup.php nonce.php pre-authenticate(hash/key pre-include for AJAX calls).php
+/php/game/mates.php (matching) play.php?a=is_my_turn or play_turn  training-session.php (lesson, not to be confused with system session.php) lesson.php puzzle.php 
+
+Separate page logic from user-data logic.  Use compile myPage of templates to build static pages (page-logic templating system).  AJAX will maintain session/state and deliver RESTFUL like APIs, but the state maintainenance is preserved at the page level (using session.php)
+
+maybe throw in other games ... minigames such as pawn rush (that may not have a king?)  also mysumgame 12x12 printables ... wizard.mypatentideas.com should have sjcl library and login without password storage === don't get bogged down in minutia and features, focus on main capabilities.
+
+develop for a 800x600 playing area with 500x500 for the board with room above/below for user info (clock, eval, piece eval, name/avatar) ... bottom corner (maybe left) have a mouseover event display the board position a6 and is blank if not moused over the board.  map ONMOUSEDOWN to ONTOUCHDOWN etc so the behaviors will work on phone.  right area (portrait mode) will have moves etc.
+
+PGN => JSON => CHSON.  We need longer notation so in game review with forward/backward arrows we can just move.
+
+USE: show arrows.  Move p:e2-e4 or Move p:e4x[p]d5 ... that is, action as "move", what is "pawn" [p], from where [-] as to [x] as to with capture where and what.  Now think about rewind.  With the information, I can rebuild the board and show the moves and restore the correct piece.  
+USE: update board to allow eval engine and review.  The short board notation can be stored for each half-move, so that one can click and have the pieces fly around the board to their appropriate position.
+USE: game details using 3NF and relational data understanding.  The goal is to capture all sufficient statistics yet easily degrade into the PGN format.  Chess notation verbose (cvn).  I believe CHSON (Chess JSON) is a better structure.
+
+Game info: opponent [user] and avatar ... 
+Game setup: color chosen random, round robin, rotating match, whatever.
+[userX] is white, [userY] is black
+Puzzle mode: "black"/"white" to play (whose turn is it when I don't have the game history)
+Mode: "puzzle", "lesson", "game"
+Game: [array] = {before: comments, eval, notes, time, board-position-notation, diagram options}, {white: p:e2-e4}, {after: comments, eval, notes, time, board-position-notation, diagram options}, {black: p:d7-d5}, {eval-last, notes, time, board-position-notation, diagram options}
+	[array+1] = {white: p:e4x[p]d5}, ...
+	
+	[1] = white:  	{before: info}
+					{move: info}
+					{after: info}
+	[1] = black:  	{before: info}
+					{move: info}
+					{after: info}
+					
+	maybe notes has "considers" certain moves in the logs... fast and responsive but allow for deep dives... how did Kasparov annotate games in his private study?  Hikaru?
+	
+	
+	
+[array] is linear and represents the move count.  Certainly short notation can evolve from this long notation, but why?  The purpose of the short notation was pre-computer and used as a compression algorithm.  A good chess player is converting that to a meaningful event which is fully articulated in the long notation.  Ergo, QED.
+
+# 3/8/2025
+https://talkchess.com/viewtopic.php?t=78626
+There has been talk of Chess JSON as JGN with a discussion of additional optional fields.  Same basic idea.
+
+For Fisher Random (960), initial board would be under info of game.  By default, we assume the class board position for initialization.
+
+Setup XAMP locally to allow the beginning of the build.
+
+welcome.html (landing) ... (is the system setup, if not wizard) ... is the user setup, then login else signup.  Allow Guest is a system option ...
+
+home.html is a simple tabular system.  Friends or Chess Mates is primary tab and has datables pulling data from inodes.  Other tabs may be Account and Setttings and ???
+
+When I click on a "friend" (with SELF being the default, I can see an expansion of sessions that is a nested subtable using datatables (so I can sort/search/filter) - again an inode pull default sort by date).
+
+The friend making and play a friend may need some external storage in the INODES in case the friend doesn't have an account yet, like a TRANSACTION/ROLLBACK in SQL.
+
+A friend session will open in a new window/tab with the session name:  [mshaffer-alex_2025-03-08_12:22:03.123] which would be the folder name.  That folder would have an info.json file that says things like [mshaffer: Daddy, alex: Alexander, Session Name Daddy Invites Alex]
+
+/games/ would have traditional games 
+/minigames/
+/lessons/
+/puzzles/
+
+? do we redundantly store puzzeles at the global level or key at global so they are aliases locally.
+
+It seems that storing globally makes sense 
+
+/mshaffer/games/ ... organized by session 
+/mshaffer/puzzles... organized by session 
+
+Chessbase has two formats for PGN: CBH and CBF 
+
+FEN (Forsyth-Edwards-Notation) string.
+
+rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+
+board , whose move, castling options, is half move, move number 
+upper is BLACK, lower is white 
+
+{white: p:e4x[p]d5} => {white: p:e4x[P]d5}
+	
+castling options requires chess.js validation - is this simple to implement?
+
