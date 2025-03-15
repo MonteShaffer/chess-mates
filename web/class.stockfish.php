@@ -6,44 +6,81 @@ class stockfish
 	private $pipes;
 	private $offset;
 	public $out;
-	public $parsed;
 	
-	public function __construct($EXE = "C:\stockfish\stockfish.exe")
-		{
+	public function __construct($EXE = "C:/stockfish/stockfish.exe")
+		{		
+		$this->EXE		= $EXE;
 		$descr = array	(
 						0 => array("pipe", "r"), 	#iStream as stdin
 						1 => array("pipe", "w"),	#oStream as stdout
 						2 => array("pipe", "w")		#eStream as stderr
 						);
-		$this->pipes = array();
-		$this->offset = array(0,0,0);
-		$this->out = array	(
-								"commands" 	= array(), 
-								"stream"	= "", 
-								"payload"	= array()
+		$this-> STDOUT = dirname(__FILE__). "/". "stdout.txt";
+		
+		$descr = array	(
+						0 => array("pipe", "r"), 	#iStream as stdin
+						1 => array("file", $this-> STDOUT, "w"),	#oStream as stdout
+						2 => array("pipe", "w")		#eStream as stderr
+						);
+						
+						
+						
+		$this->pipes 	= array();
+		$this->offset 	= array(0,0,0);
+		$this->out 		= array(
+								"commands" 	=>	array(),
+								"stream"	=>	array(),
+								"payload"	=>	array()
 								);
-		$this->process = proc_open($EXE, $descr, $this->pipes);
+		$this->stream 	= "";
+		$this->process 	= proc_open($this->EXE, $descr, $this->pipes);
+		
+		# https://www.php.net/manual/en/function.stream-get-contents.php
+		# stream_set_blocking($this->pipes[1], 0);
+		
+		
+		$this->timeout 	= 5; # isComplete timeout (in seconds)
+		$this->start 	= microtime(true);
+		$this->now		= microtime(true);
 		}
 	
 	public function isComplete($what="bestmove",$micro=10000)
 		{
+		$this->now = microtime(true); 
+		$this->time = $this->now - $this->start;
+		if($this->time > $this->timeout) { return false; }
 		# isready returns "ok" even when search is still ongoing
-		while (strpos($this->out, $what) === false) 
+		while (strpos($this->stream, $what) === false) 
 			{
 			# set a delay before checking again
 			usleep($micro);
 			$this->getStream();
 			}
+		return true;
 		}
 	public function getStream()
 		{
-		$this->out["stream"][microtime(true)] .= stream_get_contents	
+			/*
+		$contents = "";
+		while ( fgets($this->pipes[1]) !== false ) 
+			{
+			$contents .= fgets($this->pipes[1])."\n";
+			}	
+		print_r($contents); exit;
+		*/
+		/*
+		$this->out["stream"][microtime(true).""] = stream_get_contents	
 												(	$this->pipes[1],
 													-1,
 													$this->offset[1]
-												) . "\n";
+												);
 		# update latest marker from stdout 
-		$this->offset[1] = ftell(this->pipes[1]);		
+		$this->offset[1] = ftell(this->pipes[1]);	
+		*/
+		#$this->stream = stream_get_contents($this->pipes[1]);
+		$this->stream = file_get_contents($this-> STDOUT);
+		print_r($this);  #exit;
+		
 		}
 		
 	public function setOption($option="UCI_LimitStrength",$value="true")
@@ -55,13 +92,17 @@ class stockfish
 		}
 	public function sendCommand($cmd="uci")
 		{
+		$this->now = microtime(true);
 		# if (is_resource($this->process)) {
-		$this->out["commands"][microtime(true)] = $cmd; # log activity
+		$this->out["commands"][$this->now.""] = $cmd; # log activity
 		
 		fwrite($this->pipes[0], $cmd."\n");
 		fflush($this->pipes[0]);
-		$this->getStream();
 		
+		# file_put_contents($this -> STDOUT,"\n\n##### cmd[".$this->now."]: ".$cmd." #####\n\n", FILE_APPEND);
+		
+		
+		$this->getStream();
 		# https://official-stockfish.github.io/docs/stockfish-wiki/UCI-&-Commands.html
 		# position startpos
 		# position startpos moves e2e4 e7e5 g1f3
@@ -82,7 +123,8 @@ class stockfish
 		# go movetime 5000
 		}
 		
-	public evalPosition = function($fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+	#public evalPosition = function($fen ="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+	public function evalPosition ($fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 		{
 		$this->sendCommand("uci");
 		$this->sendCommand("position fen ".$fen);
@@ -91,7 +133,7 @@ class stockfish
 		
 		
 		}
-	public findBestMove = function($fen,$method="depth 10")
+	public function findBestMove ($fen, $method = "depth 10")
 		{
 		$this->sendCommand("uci");
 		$this->sendCommand("position fen ".$fen);
@@ -100,20 +142,20 @@ class stockfish
 		
 		} 
 	
-	public parseBestMove = function($str)
+	public function parseBestMove($str)
 		{		
 		$data = array();
 		
 		return $data;
 		}
-	public parseEval = function($str)
+	public function parseEval($str)
 		{
 		$data = array();
 		
 		return $data;
 		}
 
-	public close = function()
+	public function close()
 		{
 		fclose($this->pipes[0]);
 		fclose($this->pipes[1]);

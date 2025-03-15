@@ -1,0 +1,74 @@
+Stockfish 17 by the Stockfish developers (see AUTHORS file)
+id name Stockfish 17
+id author the Stockfish developers (see AUTHORS file)
+
+option name Debug Log File type string default <empty>
+option name NumaPolicy type string default auto
+option name Threads type spin default 1 min 1 max 1024
+option name Hash type spin default 16 min 1 max 33554432
+option name Clear Hash type button
+option name Ponder type check default false
+option name MultiPV type spin default 1 min 1 max 256
+option name Skill Level type spin default 20 min 0 max 20
+option name Move Overhead type spin default 10 min 0 max 5000
+option name nodestime type spin default 0 min 0 max 10000
+option name UCI_Chess960 type check default false
+option name UCI_LimitStrength type check default false
+option name UCI_Elo type spin default 1320 min 1320 max 3190
+option name UCI_ShowWDL type check default false
+option name SyzygyPath type string default <empty>
+option name SyzygyProbeDepth type spin default 1 min 1 max 100
+option name Syzygy50MoveRule type check default true
+option name SyzygyProbeLimit type spin default 7 min 0 max 7
+option name EvalFile type string default nn-1111cefa1111.nnue
+option name EvalFileSmall type string default nn-37f18f62d772.nnue
+uciok
+info string NNUE evaluation using nn-1111cefa1111.nnue (133MiB, (22528, 3072, 15, 32, 1))
+info string NNUE evaluation using nn-37f18f62d772.nnue (6MiB, (22528, 128, 15, 32, 1))
+
+
+ NNUE derived piece values:
++-------+-------+-------+-------+-------+-------+-------+-------+
+|   r   |   n   |   b   |   q   |   k   |   b   |   n   |   r   |
+| -5.34 | -3.94 | -4.38 | -10.0 |       | -4.22 | -3.98 | -5.55 |
++-------+-------+-------+-------+-------+-------+-------+-------+
+|   p   |   p   |   p   |   p   |   p   |   p   |   p   |   p   |
+| -0.49 | -1.27 | -1.25 | -1.37 | -1.39 | -1.55 | -1.42 | -0.60 |
++-------+-------+-------+-------+-------+-------+-------+-------+
+|       |       |       |       |       |       |       |       |
+|       |       |       |       |       |       |       |       |
++-------+-------+-------+-------+-------+-------+-------+-------+
+|       |       |       |       |       |       |       |       |
+|       |       |       |       |       |       |       |       |
++-------+-------+-------+-------+-------+-------+-------+-------+
+|       |       |       |       |       |       |       |       |
+|       |       |       |       |       |       |       |       |
++-------+-------+-------+-------+-------+-------+-------+-------+
+|       |       |       |       |       |       |       |       |
+|       |       |       |       |       |       |       |       |
++-------+-------+-------+-------+-------+-------+-------+-------+
+|   P   |   P   |   P   |   P   |   P   |   P   |   P   |   P   |
+| +0.41 | +1.00 | +1.04 | +1.13 | +1.16 | +1.31 | +1.17 | +0.41 |
++-------+-------+-------+-------+-------+-------+-------+-------+
+|   R   |   N   |   B   |   Q   |   K   |   B   |   N   |   R   |
+| +5.31 | +3.56 | +4.19 | +8.12 |       | +3.94 | +3.75 | +5.46 |
++-------+-------+-------+-------+-------+-------+-------+-------+
+
+ NNUE network contributions (White to move)
++------------+------------+------------+------------+
+|   Bucket   |  Material  | Positional |   Total    |
+|            |   (PSQT)   |  (Layers)  |            |
++------------+------------+------------+------------+
+|  0         |     0.00   |  -  0.83   |  -  0.83   |
+|  1         |     0.00   |  +  0.57   |  +  0.57   |
+|  2         |     0.00   |  +  0.28   |  +  0.28   |
+|  3         |     0.00   |  +  0.28   |  +  0.28   |
+|  4         |     0.00   |  +  0.22   |  +  0.22   |
+|  5         |     0.00   |  +  0.09   |  +  0.09   |
+|  6         |     0.00   |  +  0.12   |  +  0.12   |
+|  7         |     0.00   |  +  0.07   |  +  0.07   | <-- this bucket is used
++------------+------------+------------+------------+
+
+NNUE evaluation        +0.07 (white side)
+Final evaluation       +0.09 (white side) [with scaled NNUE, ...]
+
